@@ -18,7 +18,7 @@ class AWARE():
     def Assess(self):
         previous_temp = self.knowledge.current
         while True:
-            user_input = input("Enter the current temperature: ")
+            user_input = input("Enter temperature: ")
             try:
                 temp = int(user_input)
                 break

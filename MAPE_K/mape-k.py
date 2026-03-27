@@ -46,7 +46,7 @@ class MAPE():
     def Plan(self):
         if self.knowledge.state == "too_hot":
             self.knowledge.action = "cool"
-            print("[Plan] Turn on AC\n")
+            print("[Plan] Turn on AC")
             print(f"[Plan] Reduce temperature from {self.knowledge.current} to {self.knowledge.upper}\n")
         
         elif self.knowledge.state == "too_cold":
