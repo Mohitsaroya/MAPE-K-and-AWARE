@@ -25,8 +25,12 @@ class MAPE():
             except ValueError:
                 print("Invalid input. Please enter a valid number.\n")
 
-        self.knowledge.current = temp
-        print(f"\n[Monitor] Temperature updated from {previous_temp} to {self.knowledge.current}\n")
+        if self.knowledge.current == temp:
+            print(f"\n[Monitor] Temperature remains unchanged at {self.knowledge.current}\n")
+        
+        else:
+            self.knowledge.current = temp
+            print(f"\n[Monitor] Temperature updated from {previous_temp} to {self.knowledge.current}\n")
         
     def Analyze(self):
         temp = self.knowledge.current
