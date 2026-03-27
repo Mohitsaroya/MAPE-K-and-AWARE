@@ -26,7 +26,7 @@ class AWARE():
                 print("Invalid input. Please enter a valid number.\n")
 
         self.knowledge.current = temp
-        print(f"[Assess] Temperature updated from {previous_temp} to {self.knowledge.current}\n")
+        print(f"\n[Assess] Temperature updated from {previous_temp} to {self.knowledge.current}\n")
         
     def Weigh(self):
         temp = self.knowledge.current
