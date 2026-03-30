@@ -78,11 +78,11 @@ class AWARE():
 
         if action == "cool":
             print("[Act] Cooling...")
-            self.k.current -= 2
+            self.k.current = self.k.upper
 
         elif action == "heat":
             print("[Act] Heating...")
-            self.k.current += 2
+            self.k.current = self.k.lower
 
         else:
             print("[Act] Idle...")
@@ -113,7 +113,7 @@ class AWARE():
         failures = [e for e in recent if not e["success"]]
 
         if len(failures) >= 2:
-            print("[Enrich] Too many failures → adjusting thresholds")
+            print("[Enrich] Too many failures -> adjusting thresholds")
 
             self.k.upper += 1
             self.k.lower -= 1
