@@ -4,95 +4,130 @@ class Knowledge():
         self.lower = lower
         self.current = current
         
-        self.state = None
+        self.history = [current]
+        self.predicted = current
+        
         self.action = None
         self.log = []
-        
+
     def __str__(self):
-        return f"Upper Threshold: {self.upper},\nLower Threshold: {self.lower},\nCurrent Temperature: {self.current}"
-    
+        return (
+            f"Upper: {self.upper},\nLower: {self.lower}\n"
+            f"Current: {self.current},\nPredicted: {self.predicted}"
+        )
+
+
 class AWARE():
     def __init__(self, knowledge):
-        self.knowledge = knowledge
-    
+        self.k = knowledge
+
     def Assess(self):
-        previous_temp = self.knowledge.current
+        prev = self.k.current
+
         while True:
-            user_input = input("Enter temperature: ")
             try:
-                temp = int(user_input)
+                temp = int(input("Enter temperature: "))
                 break
-            except ValueError:
-                print("Invalid input. Please enter a valid number.\n")
+            except:
+                print("Invalid input.\n")
 
-        if self.knowledge.current == temp:
-            print(f"\n[Monitor] Temperature remains unchanged at {self.knowledge.current}\n")
-        
+        self.k.current = temp
+        self.k.history.append(temp)
+
+        if len(self.k.history) >= 2:
+            trend = self.k.history[-1] - self.k.history[-2]
+            self.k.predicted = self.k.current + trend
         else:
-            self.knowledge.current = temp
-            print(f"\n[Monitor] Temperature updated from {previous_temp} to {self.knowledge.current}\n")
-        
+            self.k.predicted = self.k.current
+
+        print(f"\n[Assess] Updated from {prev} -> {temp}")
+        print(f"[Assess] Predicted next temp: {self.k.predicted}\n")
+
+
     def Weigh(self):
-        temp = self.knowledge.current
-        upper = self.knowledge.upper
-        lower = self.knowledge.lower
+        temp = self.k.current
+        pred = self.k.predicted
+        upper = self.k.upper
+        lower = self.k.lower
 
-        if temp > upper:
-            options = ["cool"]
-        elif temp < lower:
-            options = ["heat"]
+        options = []
+
+        if temp > upper or pred > upper:
+            options.append("cool")
+        if temp < lower or pred < lower:
+            options.append("heat")
+        if lower <= temp <= upper:
+            options.append("idle")
+
+        if "cool" in options:
+            action = "cool"
+        elif "heat" in options:
+            action = "heat"
         else:
-            options = ["idle"]
+            action = "idle"
 
-        self.knowledge.action = options[0]
+        self.k.action = action
 
-        print(f"[Weigh] Current temperature: {temp}")
-        print(f"[Weigh] Valid options: {options}")
-        print(f"[Weigh] Selected action: {self.knowledge.action}\n")
-        
+        print(f"[Weigh] Current: {temp}, Predicted: {pred}")
+        print(f"[Weigh] Options considered: {options}")
+        print(f"[Weigh] Selected: {action}\n")
+
+
     def Act(self):
-        action = self.knowledge.action
-        
+        action = self.k.action
+
         if action == "cool":
-            print("[Act] AC is now ON.")
-            self.knowledge.current = self.knowledge.upper
-            print(f"[Act] Temperature is now {self.knowledge.current}\n")
-        
+            print("[Act] Cooling...")
+            self.k.current -= 2
+
         elif action == "heat":
-            print("[Act] Heater is now ON.")
-            self.knowledge.current = self.knowledge.lower
-            print(f"[Act] Temperature is now {self.knowledge.current}\n")
-            
+            print("[Act] Heating...")
+            self.k.current += 2
+
         else:
-            print("[Act] System is idle.\n")
-    
+            print("[Act] Idle...")
+
+        print(f"[Act] New temperature: {self.k.current}\n")
+
+
     def Reflect(self):
-        log_entry = {
-            "temperature": self.knowledge.current,
-            "action": self.knowledge.action
+        success = self.k.lower <= self.k.current <= self.k.upper
+
+        entry = {
+            "temp": self.k.current,
+            "action": self.k.action,
+            "success": success
         }
-        self.knowledge.log.append(log_entry)
-        print(f"[Reflect] Action logged: {log_entry}\n")
-        
+
+        self.k.log.append(entry)
+
+        print(f"[Reflect] Result: {'GOOD' if success else 'BAD'}")
+        print(f"[Reflect] Logged: {entry}\n")
+
+
     def Enrich(self):
-        print("[Enrich] Current knowledge log:")
-        for i, entry in enumerate(self.knowledge.log, 1):
-            print(f"  {i}. Temperature: {entry['temperature']}, Action: {entry['action']}")
-        print()
-        
+        if len(self.k.log) < 3:
+            return
+
+        recent = self.k.log[-3:]
+        failures = [e for e in recent if not e["success"]]
+
+        if len(failures) >= 2:
+            print("[Enrich] Too many failures → adjusting thresholds")
+
+            self.k.upper += 1
+            self.k.lower -= 1
+
+        print(f"[Enrich] Updated thresholds: ({self.k.lower}, {self.k.upper})\n")
+
 
 if __name__ == "__main__":
-    knowledge = Knowledge(upper=25, lower=20, current=23)
-    
-    knowledge.log.append({
-        "temperature": knowledge.current,
-        "action": "idle"
-    })
-    
-    system = AWARE(knowledge)
+    k = Knowledge(upper=25, lower=20, current=23)
+    system = AWARE(k)
+
     while True:
         print("\n-----------------------------")
-        print(system.knowledge)
+        print(k)
         print("-----------------------------\n")
 
         system.Assess()
