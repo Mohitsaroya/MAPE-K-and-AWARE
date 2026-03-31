@@ -8,7 +8,10 @@ class Knowledge():
         self.action = None
         
     def __str__(self):
-        return f"Upper Threshold: {self.upper},\nLower Threshold: {self.lower},\nCurrent Temperature: {self.current}"
+        return (
+            f"Internal states:\nUpper Threshold: {self.upper}\nLower Threshold: {self.lower}\n\n"
+            f"Managed system:\nCurrent Temperature: {self.current}"
+        )
     
 class MAPE():
     def __init__(self, knowledge):
@@ -17,7 +20,7 @@ class MAPE():
     def Monitor(self):
         previous_temp = self.knowledge.current
         while True:
-            user_input = input("Enter temperature: ")
+            user_input = input("Enter temperature (External Environment): ")
 
             try:
                 temp = int(user_input)

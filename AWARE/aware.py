@@ -12,8 +12,8 @@ class Knowledge():
 
     def __str__(self):
         return (
-            f"Upper: {self.upper},\nLower: {self.lower}\n"
-            f"Current: {self.current},\nPredicted: {self.predicted}"
+            f"Internal states:\nUpper Threshold: {self.upper}\nLower Threshold: {self.lower}\nPredicted: {self.predicted}\n\n"
+            f"Managed system:\nCurrent Temperature: {self.current}"
         )
 
 
@@ -26,7 +26,7 @@ class AWARE():
 
         while True:
             try:
-                temp = int(input("Enter temperature: "))
+                temp = int(input("Enter temperature (External Environment): "))
                 break
             except:
                 print("Invalid input.\n")
@@ -79,21 +79,11 @@ class AWARE():
 
         if action == "cool":
             print("[Act] Cooling...")
-            
-            step = max(1, abs(self.k.current - self.k.upper) // 2)
-            self.k.current -= step
-            
-            if self.k.current < self.k.upper:
-                self.k.current = self.k.upper
+            self.k.current -= 2
 
         elif action == "heat":
             print("[Act] Heating...")
-            
-            step = max(1, abs(self.k.lower - self.k.current) // 2)
-            self.k.current += step
-            
-            if self.k.current > self.k.lower:
-                self.k.current = self.k.lower
+            self.k.current += 2
 
         else:
             print("[Act] Idle...")
