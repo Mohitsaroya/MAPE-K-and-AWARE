@@ -75,19 +75,30 @@ class AWARE():
 
     def Act(self):
         action = self.k.action
+        before = self.k.current
 
         if action == "cool":
             print("[Act] Cooling...")
-            self.k.current = self.k.upper
+            
+            step = max(1, abs(self.k.current - self.k.upper) // 2)
+            self.k.current -= step
+            
+            if self.k.current < self.k.upper:
+                self.k.current = self.k.upper
 
         elif action == "heat":
             print("[Act] Heating...")
-            self.k.current = self.k.lower
+            
+            step = max(1, abs(self.k.lower - self.k.current) // 2)
+            self.k.current += step
+            
+            if self.k.current > self.k.lower:
+                self.k.current = self.k.lower
 
         else:
             print("[Act] Idle...")
 
-        print(f"[Act] New temperature: {self.k.current}\n")
+        print(f"[Act] Temperature: {before} -> {self.k.current}\n")
 
 
     def Reflect(self):
